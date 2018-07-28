@@ -5,8 +5,8 @@ pass_dev = click.make_pass_decorator(LED)
 
 
 @click.group(invoke_without_command=True)
-@click.option('--ring', is_flag=True, help="Control ring led")
-@click.option('--power', is_flag=True, help="Control power led")
+@click.option("--ring", is_flag=True, help="Control ring led")
+@click.option("--power", is_flag=True, help="Control power led")
 @click.pass_context
 def cli(ctx, ring, power):
     """Control LEDs of Intel NUC computers."""
@@ -28,7 +28,7 @@ def cli(ctx, ring, power):
 
 
 @cli.command()
-@click.argument('raw')
+@click.argument("raw")
 @pass_dev
 def raw(ring, raw):
     """Write raw string, useful for testing."""
@@ -36,7 +36,7 @@ def raw(ring, raw):
 
 
 @cli.command()
-@click.argument('brightness', type=int, required=False)
+@click.argument("brightness", type=int, required=False)
 @pass_dev
 def brightness(ring, brightness):
     """Get or set brightness [0,100]."""
@@ -48,7 +48,7 @@ def brightness(ring, brightness):
 
 
 @cli.command()
-@click.argument('color', required=False)
+@click.argument("color", required=False)
 @pass_dev
 def color(ring, color):
     """Get or set color."""
@@ -64,7 +64,7 @@ def color(ring, color):
 
 
 @cli.command()
-@click.argument('effect', required=False)
+@click.argument("effect", required=False)
 @pass_dev
 def effect(ring, effect):
     """Get or set effect."""
@@ -80,16 +80,18 @@ def effect(ring, effect):
 
 
 @cli.command()
-@click.option('--color', required=False)
-@click.option('--brightness', type=int, required=False)
-@click.option('--effect', required=False)
-@click.option('--duration', type=int, required=True)
+@click.option("--color", required=False)
+@click.option("--brightness", type=int, required=False)
+@click.option("--effect", required=False)
+@click.option("--duration", type=int, required=True)
 @pass_dev
 def notify(ring, color, brightness, effect, duration):
     """Change the LED settings for a duration."""
     with ring:
-        ring.notify(color=color, brightness=brightness,
-                    effect=effect, duration=duration)
+        ring.notify(
+            color=color, brightness=brightness, effect=effect, duration=duration
+        )
+
 
 @cli.command()
 @pass_dev

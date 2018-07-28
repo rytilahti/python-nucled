@@ -5,22 +5,23 @@ import logging
 
 _LOGGER = logging.getLogger(__name__)
 
+
 class LEDException(Exception):
     pass
 
 
 class Effect(enum.Enum):
-    BlinkFast = 'blink_fast'
-    BlinkMedium = 'blink_medium'
-    BlinkSlow = 'blink_slow'
-    FadeFast = 'fade_fast'
-    FadeMedium = 'fade_medium'
-    FadeSlow = 'fade_slow'
-    Solid = 'none'
+    BlinkFast = "blink_fast"
+    BlinkMedium = "blink_medium"
+    BlinkSlow = "blink_slow"
+    FadeFast = "fade_fast"
+    FadeMedium = "fade_medium"
+    FadeSlow = "fade_slow"
+    Solid = "none"
 
 
 EFFECT_MAP = {
-    0x00: Effect.Solid, # for power
+    0x00: Effect.Solid,  # for power
     0x01: Effect.BlinkFast,
     0x02: Effect.BlinkSlow,
     0x03: Effect.FadeFast,
@@ -61,7 +62,8 @@ class LED:
            led.color = 'green'
            led.brightness = 100
     """
-    def __init__(self, target, path='/proc/acpi/nuc_led'):
+
+    def __init__(self, target, path="/proc/acpi/nuc_led"):
         self._path = path
         self._target = target
         self.supported_colors = {}
@@ -71,7 +73,7 @@ class LED:
         self._effect = None
 
     def _parse_brightness(self, value):
-        return int(value.strip().strip('%'))
+        return int(value.strip().strip("%"))
 
     def _parse_color(self, value):
         x = re.search("\((.+)\)", value)
@@ -87,9 +89,10 @@ class LED:
         with open(self._path) as f:
             for l in f:
                 l = l.strip()
-                if len(l) == 0 or l == '\x00': continue
+                if len(l) == 0 or l == "\x00":
+                    continue
                 try:
-                    desc, value = l.strip().split(':')
+                    desc, value = l.strip().split(":")
                 except:
                     raise
                     pass
@@ -107,7 +110,12 @@ class LED:
         """Return current state as wanted by the kernel driver."""
         if self._brightness is None:
             self.fetch_state()
-        state = "%s,%i,%s,%s" % (self._target, self._brightness, self._effect.value, self._color.value)
+        state = "%s,%i,%s,%s" % (
+            self._target,
+            self._brightness,
+            self._effect.value,
+            self._color.value,
+        )
         _LOGGER.debug("Returning state: %s" % state)
         return state
 
@@ -117,7 +125,7 @@ class LED:
         See `:func: get_state_string`
         """
         _LOGGER.debug("Setting raw state: %s" % x)
-        with open(self._path, 'w') as f:
+        with open(self._path, "w") as f:
             f.write(x)
 
         self.fetch_state()
@@ -126,7 +134,7 @@ class LED:
         """Set current state to the device."""
         state = self.get_state_string()
         _LOGGER.debug("Setting state: %s" % state)
-        with open(self._path, 'w') as f:
+        with open(self._path, "w") as f:
             f.write(state)
 
     @property
@@ -199,13 +207,19 @@ class LED:
         self.set_state()
 
     def __repr__(self):
-        return "%s: bright %s, color %s, effect %s" % (self._target, self._brightness, self._color, self._effect)
+        return "%s: bright %s, color %s, effect %s" % (
+            self._target,
+            self._brightness,
+            self._color,
+            self._effect,
+        )
 
 
 class Ring(LED):
     """Represents NUC ring LED."""
+
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, target='ring', **kwargs)
+        super().__init__(*args, target="ring", **kwargs)
         self.supported_colors = {
             0x00: Color.Off,
             0x01: Color.Cyan,
@@ -217,12 +231,10 @@ class Ring(LED):
             0x07: Color.White,
         }
 
+
 class Power(LED):
     """Represents NUC power LED."""
+
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, target='power', **kwargs)
-        self.supported_colors = {
-            0x00: Color.Off,
-            0x01: Color.Blue,
-            0x02: Color.Amber,
-        }
+        super().__init__(*args, target="power", **kwargs)
+        self.supported_colors = {0x00: Color.Off, 0x01: Color.Blue, 0x02: Color.Amber}
